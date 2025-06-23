@@ -54,12 +54,12 @@ app.post('/doctor-dashboard', async (req, res) => {
 
 app.post('/submit-appointment', async (req, res) => {
   try {
+    console.log("Form Data:", req.body);
     const appointment = new Appointment({
       ...req.body,
       prescription: '',
       status: 'Pending'
     });
-
     await appointment.save();
      res.redirect('/booking-success');
   } catch (err) {
