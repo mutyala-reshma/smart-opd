@@ -162,46 +162,22 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "admin123";
-
+let isAdminLoggedIn = false;
 app.get('/admin-login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
 });
-
 app.post('/admin-login', (req, res) => {
   const { username, password } = req.body;
-
-  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+  if (username === 'admin' && password === 'admin123') {
+    isAdminLoggedIn = true;
     res.redirect('/admin');
   } else {
     res.send('<h3>Invalid credentials. <a href="/admin-login">Try again</a></h3>');
   }
 });
-
-// Simple login session (optional for real security)
-const session = require('express-session');
-
-app.use(session({
-  secret: 'opdsecret',
-  resave: false,
-  saveUninitialized: true
-}));
-
-// Modify admin login:
-app.post('/admin-login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-    req.session.isAdmin = true;
-    res.redirect('/admin');
-  } else {
-    res.send('<h3>Invalid credentials. <a href="/admin-login">Try again</a></h3>');
-  }
-});
-
-// Protect admin route:
+// Protect /admin route
 app.get('/admin', (req, res) => {
-  if (req.session.isAdmin) {
+  if (isAdminLoggedIn) {
     res.render('admin-panel', { doctors });
   } else {
     res.redirect('/admin-login');
