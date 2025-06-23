@@ -6,6 +6,7 @@ body {
   background: linear-gradient(to right, #f0f4f8, #d9e4ec);
   color: #333;
   min-height: 100vh;
+  text-align:center;
 }
 
 .container {
@@ -81,4 +82,10 @@ ul {
 
 .nav-buttons button:hover {
   background-color: #218838;
+}
+.welcome-title {
+  margin-top: 60px;
+  font-size: 36px;
+  color: #2c3e50;
+  font-weight: bold;
 }
