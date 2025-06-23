@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome, Doctor!</h2>
+    <% if (appointments.length === 0) { %>
+      <p>No appointments yet.</p>
+    <% } else { %>
+      <ul>
+        <% appointments.forEach((app, index) => { %>
+          <li>
+            <strong><%= app.name %></strong> — 
+            <%= app.department %> at <%= app.time %> on <%= app.date %><br>
+            <form action="/update-prescription" method="POST">
+              <input type="hidden" name="index" value="<%= index %>">
+              <textarea name="prescription" placeholder="Write prescription here" required><%= app.prescription %></textarea><br>
+              <button type="submit">Save Prescription</button>
+            </form>
+          </li>
+          <hr>
+        <% }); %>
+      </ul>
+    <% } %>
+    <a href="/">← Home</a>
+  </div>
+</body>
+</html>

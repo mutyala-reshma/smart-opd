@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receptionist Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Receptionist Dashboard</h2>
+
+    <h3>All Appointments</h3>
+    <% if (appointments.length === 0) { %>
+      <p>No appointments yet.</p>
+    <% } else { %>
+      <ul>
+        <% appointments.forEach((app, index) => { %>
+          <li>
+            <strong><%= app.name %></strong> – <%= app.department %><br>
+            Date: <%= app.date %>, Time: <%= app.time %><br>
+            Status: <strong><%= app.status %></strong><br>
+            <form action="/update-status" method="POST" style="margin-top: 5px;">
+              <input type="hidden" name="index" value="<%= index %>">
+              <select name="status">
+                <option value="Pending">Pending</option>
+                <option value="Arrived">Arrived</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+              <button type="submit">Update</button>
+            </form>
+          </li>
+          <hr>
+        <% }); %>
+      </ul>
+    <% } %>
+
+    <h3>Add Walk-In Patient</h3>
+    <form action="/submit-appointment" method="POST" class="booking-form">
+      <input type="text" name="name" placeholder="Full Name" required><br>
+      <input type="tel" name="phone" placeholder="Phone Number" required><br>
+      <input type="email" name="email" placeholder="Email Address" required><br>
+      <select name="department" required>
+        <option value="">--Select Department--</option>
+        <option value="General Medicine">General Medicine</option>
+        <option value="Pediatrics">Pediatrics</option>
+        <option value="Gynecology">Gynecology</option>
+        <option value="Orthopedics">Orthopedics</option>
+      </select><br>
+      <input type="date" name="date" required><br>
+      <input type="time" name="time" required><br>
+      <button type="submit">Add Appointment</button>
+    </form>
+
+    <br><a href="/">← Back to Home</a>
+  </div>
+</body>
+</html>

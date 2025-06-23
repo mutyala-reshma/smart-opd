@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Admin Panel – Manage Doctors</h2>
+
+    <h3>Existing Doctors</h3>
+    <ul>
+      <% doctors.forEach((doc, i) => { %>
+        <li>
+          <%= doc.username %> – <%= doc.name %>
+          <form action="/remove-doctor" method="POST" style="display:inline;">
+            <input type="hidden" name="index" value="<%= i %>">
+            <button type="submit">Remove</button>
+          </form>
+        </li>
+      <% }); %>
+    </ul>
+
+    <h3>Add Doctor</h3>
+    <form action="/add-doctor" method="POST" class="booking-form">
+      <input type="text" name="username" placeholder="Username" required><br>
+      <input type="text" name="name" placeholder="Full Name" required><br>
+      <input type="password" name="password" placeholder="Password" required><br>
+      <button type="submit">Add Doctor</button>
+    </form>
+
+    <a href="/">← Back to Home</a>
+  </div>
+</body>
+</html>
