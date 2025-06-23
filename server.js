@@ -62,11 +62,6 @@ app.post('/submit-appointment', async (req, res) => {
 
     await appointment.save();
      res.redirect('/booking-success');
-    res.send(`
-      <h2>Thank you, ${appointment.name}!</h2>
-      <p>Your appointment for <strong>${appointment.department}</strong> is booked on <strong>${appointment.date}</strong> at <strong>${appointment.time}</strong>.</p>
-      <a href="/">Go Back to Home</a>
-    `);
   } catch (err) {
     console.error(err);
     res.send('<h3>Failed to book appointment. Please try again.</h3>');
