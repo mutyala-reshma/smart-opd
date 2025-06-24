@@ -87,6 +87,10 @@ app.use(session({
   saveUninitialized: false,
   cookie: { secure: false } // change to true if using HTTPS
 }));
+app.get('/receptionist-login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'receptionist-login.html'));
+});
+
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
   // Example: fetch user from DB, validate password...
@@ -95,7 +99,7 @@ app.post('/login', (req, res) => {
     req.session.user = { role: 'receptionist' };
     return res.redirect('/receptionist-dashboard');
   }
-  res.send('Invalid credentials');
+  return res.send('<h3>Invalid credentials. <a href="/receptionist-login">Try again</a></h3>');
 });
 function requireRole(role) {
   return (req, res, next) => {
@@ -126,6 +130,13 @@ app.post(
     res.redirect('/receptionist-dashboard');
   }
 );
+app.post('/receptionist-logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) console.error(err);
+    res.redirect('/receptionist-login');
+  });
+});
+
 
 app.get('/patient-login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'patient-login.html'));
@@ -201,6 +212,11 @@ app.use(session({
   saveUninitialized: false,
   cookie: { secure: false }  // set secure: true if using HTTPS
 }));
+
+app.get('/admin-login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
+});
+
 function requireLogin(req, res, next) {
   if (req.session.isAdmin) return next();
   res.redirect('/admin-login');
