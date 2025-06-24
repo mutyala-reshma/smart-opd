@@ -90,26 +90,25 @@ app.use(session({
 app.get('/receptionist-login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'receptionist-login.html'));
 });
-
-app.post('/login', (req, res) => {
+app.post('/receptionist-login', (req, res) => {
   const { username, password } = req.body;
-  // Example: fetch user from DB, validate password...
   if (username === 'receptionistUser' && password === 'pass123') {
-    // mark session with role
     req.session.user = { role: 'receptionist' };
-    return res.redirect('/receptionist-dashboard');
+    req.session.save(err => {
+      if (err) console.error('Failed to save session:', err);
+      return res.redirect('/receptionist-dashboard');
+    });
+  } else {
+    res.send('<h3>Invalid credentials. <a href="/receptionist-login">Try again</a></h3>');
   }
-  return res.send('<h3>Invalid credentials. <a href="/receptionist-login">Try again</a></h3>');
 });
 function requireRole(role) {
   return (req, res, next) => {
-    if (req.session.user?.role === role) {
-      return next();
-    }
-    // redirect or block unauthorized users
-    return res.status(403).send('Access denied');
+    if (req.session.user?.role === role) return next();
+    res.redirect(`/${role}-login`);
   };
 }
+
 // protect receptionist dashboard and status updates
 app.get(
   '/receptionist-dashboard',
