@@ -78,16 +78,55 @@ app.post('/update-prescription', (req, res) => {
 
   res.redirect('/doctor-login'); // simulate login again to see updated data
 });
-app.get('/receptionist-dashboard', (req, res) => {
-  res.render('receptionist-dashboard', { appointments });
-});
-app.post('/update-status', (req, res) => {
-  const { index, status } = req.body;
-  if (appointments[index]) {
-    appointments[index].status = status;
+const session = require('express-session');
+
+// Configure session middleware
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'a_super_secret_key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // change to true if using HTTPS
+}));
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  // Example: fetch user from DB, validate password...
+  if (username === 'receptionistUser' && password === 'pass123') {
+    // mark session with role
+    req.session.user = { role: 'receptionist' };
+    return res.redirect('/receptionist-dashboard');
   }
-  res.redirect('/receptionist-dashboard');
+  res.send('Invalid credentials');
 });
+function requireRole(role) {
+  return (req, res, next) => {
+    if (req.session.user?.role === role) {
+      return next();
+    }
+    // redirect or block unauthorized users
+    return res.status(403).send('Access denied');
+  };
+}
+// protect receptionist dashboard and status updates
+app.get(
+  '/receptionist-dashboard',
+  requireRole('receptionist'),
+  (req, res) => {
+    res.render('receptionist-dashboard', { appointments });
+  }
+);
+
+app.post(
+  '/update-status',
+  requireRole('receptionist'),
+  (req, res) => {
+    const { index, status } = req.body;
+    if (appointments[index]) {
+      appointments[index].status = status;
+    }
+    res.redirect('/receptionist-dashboard');
+  }
+);
+
 app.get('/patient-login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'patient-login.html'));
 });
@@ -101,10 +140,6 @@ app.post('/patient-dashboard', (req, res) => {
   } else {
     res.send(`<h3>No appointments found for ${email}. <a href="/patient-login">Try again</a></h3>`);
   }
-});
-
-app.get('/admin', (req, res) => {
-  res.render('admin-panel', { doctors });
 });
 
 app.post('/add-doctor', (req, res) => {
@@ -160,26 +195,36 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-let isAdminLoggedIn = false;
-app.get('/admin-login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'aSuperSecretKey',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false }  // set secure: true if using HTTPS
+}));
+function requireLogin(req, res, next) {
+  if (req.session.isAdmin) return next();
+  res.redirect('/admin-login');
+}
+// Use requireLogin to protect
+app.get('/admin', requireLogin, (req, res) => {
+  res.render('admin-panel', { doctors });
 });
+
+app.post('/admin-logout', requireLogin, (req, res) => {
+  req.session.destroy(err => {
+    if (err) console.error(err);
+    res.redirect('/admin-login');
+  });
+});
+
+
 app.post('/admin-login', (req, res) => {
   const { username, password } = req.body;
   if (username === 'admin' && password === 'admin123') {
-    isAdminLoggedIn = true;
-    res.redirect('/admin');
-  } else {
-    res.send('<h3>Invalid credentials. <a href="/admin-login">Try again</a></h3>');
+    req.session.isAdmin = true;
+    return res.redirect('/admin');
   }
-});
-// Protect /admin route
-app.get('/admin', (req, res) => {
-  if (isAdminLoggedIn) {
-    res.render('admin-panel', { doctors });
-  } else {
-    res.redirect('/admin-login');
-  }
+  res.send('<h3>Invalid credentials. <a href="/admin-login">Try again</a></h3>');
 });
 app.get('/booking-success', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'booking-success.html'));
