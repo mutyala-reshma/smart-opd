@@ -35,20 +35,24 @@ app.get('/doctor-login', (req, res) => {
 // Process login form
 app.post('/doctor-dashboard', async (req, res) => {
   const { username, password } = req.body;
-  try {
-    const doctor = await Doctor.findOne({ username, password });
-    const appointments = await Appointment.find();
+  console.log('Doctor login attempt:', username, password);
 
-    if (doctor) {
-      res.render('doctor-dashboard', { appointments });
-    } else {
-      res.send('<h3>Invalid credentials. <a href="/doctor-login">Try again</a></h3>');
+  try {
+    const doctor = await Doctor.findOne({ username: username.trim(), password: password.trim() });
+    console.log('Doctor found:', doctor);
+
+    if (!doctor) {
+      return res.send('<h3>Invalid credentials. <a href="/doctor-login">Try again</a></h3>');
     }
-  } catch (err) {
-    console.error(err);
-    res.send('<h3>Server error. Please try again later.</h3>');
+
+    const appointments = await Appointment.find();
+    res.render('doctor-dashboard', { appointments });
+  } catch (error) {
+    console.error('Error logging in doctor:', error);
+    res.status(500).send('<h3>Server error. Please try again later.</h3>');
   }
 });
+
 
 // temporary storage
 
@@ -67,7 +71,6 @@ app.post('/submit-appointment', async (req, res) => {
     res.send('<h3>Failed to book appointment. Please try again.</h3>');
   }
 });
-
 
 app.post('/update-prescription', (req, res) => {
   const { index, prescription } = req.body;
@@ -151,17 +154,34 @@ app.post('/patient-dashboard', (req, res) => {
     res.send(`<h3>No appointments found for ${email}. <a href="/patient-login">Try again</a></h3>`);
   }
 });
+app.post('/add-doctor', async (req, res) => {
+  const { username, name, password } = req.body;
+  try {
+    const existing = await Doctor.findOne({ username });
+    if (existing) {
+      return res.send('<h3>⚠️ Doctor with this username already exists!</h3><a href="/admin">Back</a>');
+    }
 
-app.post('/add-doctor', (req, res) => {
-  const { username, password, name } = req.body;
-  doctors.push({ username, password, name });
-  res.redirect('/admin');
+    const newDoctor = new Doctor({ username, name, password });
+    await newDoctor.save();
+    console.log('✅ Doctor added:', newDoctor.username);
+    res.redirect('/admin');
+  } catch (err) {
+    console.error('❌ Error adding doctor:', err);
+    res.send('<h3>Failed to add doctor.</h3>');
+  }
 });
 
-app.post('/remove-doctor', (req, res) => {
-  const { index } = req.body;
-  doctors.splice(index, 1);
-  res.redirect('/admin');
+app.post('/remove-doctor', async (req, res) => {
+  const { id } = req.body;
+  try {
+    await Doctor.findByIdAndDelete(id);
+    console.log('🗑️ Doctor removed:', id);
+    res.redirect('/admin');
+  } catch (err) {
+    console.error('❌ Error removing doctor:', err);
+    res.send('<h3>Failed to remove doctor.</h3>');
+  }
 });
 const nodemailer = require('nodemailer');
 
@@ -221,10 +241,15 @@ function requireLogin(req, res, next) {
   res.redirect('/admin-login');
 }
 // Use requireLogin to protect
-app.get('/admin', requireLogin, (req, res) => {
-  res.render('admin-panel', { doctors });
+app.get('/admin', requireLogin, async (req, res) => {
+  try {
+    const doctors = await Doctor.find();
+    res.render('admin-panel', { doctors });
+  } catch (err) {
+    console.error('❌ Error fetching doctors:', err);
+    res.send('<h3>Failed to load admin panel.</h3>');
+  }
 });
-
 app.post('/admin-logout', requireLogin, (req, res) => {
   req.session.destroy(err => {
     if (err) console.error(err);
