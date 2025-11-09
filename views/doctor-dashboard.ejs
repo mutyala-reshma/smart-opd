@@ -1,33 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Doctor Dashboard</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <div class="container">
-    <h2>Welcome, Doctor!</h2>
-    <% if (appointments.length === 0) { %>
-      <p>No appointments yet.</p>
-    <% } else { %>
-      <ul>
-        <% appointments.forEach((app, index) => { %>
-          <li>
-            <strong><%= app.name %></strong> — 
-            <%= app.department %> at <%= app.time %> on <%= app.date %><br>
-            <form action="/update-prescription" method="POST">
-              <input type="hidden" name="index" value="<%= index %>">
-              <textarea name="prescription" placeholder="Write prescription here" required><%= app.prescription %></textarea><br>
-              <button type="submit">Save Prescription</button>
-            </form>
-          </li>
-          <hr>
-        <% }); %>
-      </ul>
-    <% } %>
-    <a href="/">← Home</a>
+  <div class="dashboard-container">
+    <h2>Welcome, Dr. <%= doctor.name %></h2>
+    <p>Department: <%= doctor.department %></p>
+
+    <div class="appointments-card">
+      <h3>Your Appointments</h3>
+      <table class="appointments-table">
+        <thead>
+          <tr>
+            <th>Patient Name</th>
+            <th>Email</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Prescription</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% appointments.forEach(appointment => { %>
+            <tr>
+              <td><%= appointment.patientName %></td>
+              <td><%= appointment.email %></td>
+              <td><%= appointment.date %></td>
+              <td><%= appointment.time %></td>
+              <td><%= appointment.status %></td>
+              <td>
+                <% if (appointment.prescription) { %>
+                  <%= appointment.prescription %>
+                <% } else { %>
+                  Not added yet
+                <% } %>
+              </td>
+              <td class="action-cell">
+                <form action="/update-prescription/<%= appointment._id %>" method="POST">
+                  <input type="text" name="prescription" placeholder="Enter prescription" required>
+                  <button type="submit">Update</button>
+                </form>
+
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </body>
 </html>

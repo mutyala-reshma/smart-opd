@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <h1>Government Hospital Bhimavaram</h1>
+    <h1> Hospital Bhimavaram</h1>
   </header>
 
   <div class="container">
@@ -29,6 +29,19 @@
         <option value="Gynecology">Gynecology</option>
         <option value="ENT">ENT</option>
       </select>
+      <label for="doctor">Select Doctor</label>
+      <select id="doctor" name="doctor" required>
+  <option value="">-- Select Doctor --</option>
+  <% if (doctors && doctors.length > 0) { %>
+    <% doctors.forEach(doc => { %>
+      <option value="<%= doc.name %>"><%= doc.name %> - <%= doc.department %></option>
+    <% }) %>
+  <% } else { %>
+    <option value="">No doctors available</option>
+  <% } %>
+</select>
+
+
 
       <label for="date">Preferred Date</label>
       <input type="date" id="date" name="date" required>

@@ -24,12 +24,30 @@
     </ul>
 
     <h3>Add Doctor</h3>
-    <form action="/add-doctor" method="POST" class="booking-form">
-      <input type="text" name="username" placeholder="Username" required><br>
-      <input type="text" name="name" placeholder="Full Name" required><br>
-      <input type="password" name="password" placeholder="Password" required><br>
-      <button type="submit">Add Doctor</button>
-    </form>
+    <form action="/add-doctor" method="POST">
+  <label>Username:</label>
+  <input type="text" name="username" required>
+
+  <label>Name:</label>
+  <input type="text" name="name" required>
+
+  <label>Password:</label>
+  <input type="password" name="password" required>
+
+  <!-- ✅ Add this -->
+  <label>Department:</label>
+  <select name="department" required>
+    <option value="">-- Select Department --</option>
+    <option value="General Medicine">General Medicine</option>
+    <option value="Pediatrics">Pediatrics</option>
+    <option value="Orthopedics">Orthopedics</option>
+    <option value="Gynecology">Gynecology</option>
+    <option value="ENT">ENT</option>
+  </select>
+
+  <button type="submit">Add Doctor</button>
+</form>
+
 
     <a href="/">← Back to Home</a>
   </div>

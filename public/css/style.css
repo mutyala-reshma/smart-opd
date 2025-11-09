@@ -89,3 +89,75 @@ ul {
   color: #2c3e50;
   font-weight: bold;
 }
+/* ===== Doctor Dashboard Alignment Fix ===== */
+.dashboard-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.appointments-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 900px;
+  margin: 30px auto;
+}
+
+.appointments-card h3 {
+  color: #004b6b;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.appointments-table th,
+.appointments-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+.appointments-table th {
+  background-color: #f0f7fb;
+  color: #004b6b;
+  font-weight: 600;
+}
+
+.action-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-cell textarea {
+  width: 180px;
+  height: 60px;
+  resize: none;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px;
+  font-family: inherit;
+}
+
+.action-cell button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.action-cell button:hover {
+  background-color: #005fcc;
+}

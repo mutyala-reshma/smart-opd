@@ -8,16 +8,17 @@
 </head>
 <body>
   <div class="container">
-    <h2>Hello, <%= appointment.name %></h2>
-    <p>Your recent appointment details:</p>
-    <ul>
-      <li>Department: <%= appointment.department %></li>
-      <li>Date: <%= appointment.date %></li>
-      <li>Time: <%= appointment.time %></li>
-      <li>Status: <%= appointment.status %></li>
-      <li><strong>Prescription:</strong> <%= appointment.prescription || "Not yet updated by doctor" %></li>
-    </ul>
-    <a href="/">← Home</a>
+    <h2>Welcome, <%= appointment.name %></h2>
+<p><strong>Department:</strong> <%= appointment.department %></p>
+<p><strong>Status:</strong> <%= appointment.status %></p>
+<p><strong>Prescription:</strong> 
+  <% if (appointment.prescription && appointment.prescription.trim() !== '') { %>
+    <%= appointment.prescription %>
+  <% } else { %>
+    <em>Prescription not yet provided.</em>
+  <% } %>
+</p>
+
   </div>
 </body>
 </html>

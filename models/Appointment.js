@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const AppointmentSchema = new mongoose.Schema({
-  name: String,
+  patientName: String,
   email: String,
   department: String,
   date: String,
