@@ -25,9 +25,8 @@ app.use(session({
 }));
 
 // ✅ View Engine
-app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
+app.set('view engine', 'ejs');
 // ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
   serverSelectionTimeoutMS: 5000,
@@ -42,6 +41,21 @@ mongoose.connect(process.env.MONGO_URI, {
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'landing.html'));
 });
+// make sure you have this
+
+app.get('/booking', async (req, res) => {
+    try {
+        // Fetch all doctors from DB
+        const doctors = await Doctor.find(); // you can filter by department if needed
+
+        // Render booking.ejs and send doctors array
+        res.render('booking', { doctors });
+    } catch (err) {
+        console.error('❌ Error loading booking page:', err);
+        res.send('<h3>Failed to load booking page. Try again later.</h3>');
+    }
+});
+
 
 // ✅ Appointment Form Submission
 app.post('/submit-appointment', async (req, res) => {
@@ -263,21 +277,27 @@ app.post('/admin-logout', requireLogin, (req, res) => {
 
 // Add / Remove doctors
 app.post('/add-doctor', requireLogin, async (req, res) => {
-    const { username, name, password } = req.body;
+    console.log('Form data:', req.body); 
+    const { username, name, password, department } = req.body;
+
     try {
+        // Check if doctor already exists
         const existing = await Doctor.findOne({ username });
         if (existing) {
             return res.send('<h3>⚠️ Doctor with this username already exists!</h3><a href="/admin">Back</a>');
         }
-        const newDoctor = new Doctor({ username, name, password });
+
+        const newDoctor = new Doctor({ username, name, password, department });
         await newDoctor.save();
-        console.log('✅ Doctor added:', newDoctor.username);
+
+        console.log('✅ Doctor added:', newDoctor.username, '-', newDoctor.department);
         res.redirect('/admin');
     } catch (err) {
         console.error('❌ Error adding doctor:', err);
         res.send('<h3>Failed to add doctor.</h3>');
     }
 });
+
 
 app.post('/remove-doctor', requireLogin, async (req, res) => {
     const { id } = req.body;
