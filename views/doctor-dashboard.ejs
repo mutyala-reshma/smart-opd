@@ -42,10 +42,9 @@
               </td>
               <td class="action-cell">
                 <form action="/update-prescription/<%= appointment._id %>" method="POST">
-                  <input type="text" name="prescription" placeholder="Enter prescription" required>
-                  <button type="submit">Update</button>
+                  <textarea name="prescription" placeholder="Enter prescription..."></textarea>
+                  <button type="submit">Save</button>
                 </form>
-
               </td>
             </tr>
           <% }) %>
