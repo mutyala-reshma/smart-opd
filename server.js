@@ -40,7 +40,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // ✅ Landing Page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'landing.html'));
 });
 
 // ✅ Appointment Form Submission
